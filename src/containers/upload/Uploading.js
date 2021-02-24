@@ -15,11 +15,11 @@ class Uploading extends Component{
         }
 
         this.config = {
-            bucketName:'ffs-users-images',
-            dirName: 'prova', /* optional */
-            region: 'eu-south-1',
-            accessKeyId: 'AKIA2OXW2TJQZQQK565Z',
-            secretAccessKey: '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'
+            bucketName:'',
+            dirName: '', /* optional */
+            region: '',
+            accessKeyId: '',
+            secretAccessKey: ''
         }
 
         this.preview = this.preview.bind(this)
