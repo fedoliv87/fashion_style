@@ -1,6 +1,6 @@
 import React, {Component} from "react"
 import axios from 'axios'
-import imageToBase64 from 'image-to-base64'
+import config from '../../config.json'
 
 import 'bootstrap/dist/css/bootstrap.min.css';
 
@@ -12,14 +12,6 @@ class Uploading extends Component{
         this.state = {
             urlFile: null,
             file: null
-        }
-
-        this.config = {
-            bucketName:'',
-            dirName: '', /* optional */
-            region: '',
-            accessKeyId: '',
-            secretAccessKey: ''
         }
 
         this.preview = this.preview.bind(this)
@@ -46,7 +38,7 @@ class Uploading extends Component{
     async upload(e) {
 
         axios.post(
-            'https://99ueeayc7k.execute-api.eu-south-1.amazonaws.com/DEV/upload',
+            config.upload.uri,
             {
                 'format' : '.jpg',
                 'file' : this.state.base64

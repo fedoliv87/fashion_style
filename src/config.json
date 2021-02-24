@@ -8,5 +8,8 @@
         "USER_POOL_ID": "eu-west-3_iUS6Yw2MK",
         "APP_CLIENT_ID": "174is0trljs81sebom2ihrop8m",
         "IDENTITY_POOL_ID": "eu-west-3:2e93bea7-0602-4de5-864e-cadcc2011c07"
+    },
+    "upload": {
+        "uri" : "https://99ueeayc7k.execute-api.eu-south-1.amazonaws.com/DEV/upload"
     }
 }
