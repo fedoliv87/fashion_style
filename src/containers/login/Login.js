@@ -43,8 +43,8 @@ class Login extends Component{
                 console.log('login success!')
                 console.log(res)
 
-                this.props.userHasAuthenticated(true)
-                this.props.history.push('/wardrobe')
+                this.props.authentication.userHasAuthenticated(true)
+		this.props.history.push('/wardrobe')
             })
             .catch( err => {
                 console.log('login failure')
