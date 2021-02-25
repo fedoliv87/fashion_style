@@ -1,11 +1,7 @@
-import React, {Component, useState} from "react"
+import React, {Component} from "react"
 import {Alert} from "react-bootstrap";
 
 class ErrorAlert extends Component {
-
-    constructor(props) {
-        super(props)
-    }
 
     render(){
         if(this.props.error.visible){
