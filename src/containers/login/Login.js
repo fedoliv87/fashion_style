@@ -73,11 +73,11 @@ class Login extends Component{
                 <ErrorAlert show={this.state.error.visible} error={this.state.error} />
 
                 <form onSubmit={this.handleSubmit}>
-                    <FormGroup controlId="email" bsSize="large">
+                    <FormGroup controlId="email">
                         <FormLabel>Email</FormLabel>
                         <FormControl autoFocus type="email" value={this.state.email} onChange={this.handleChange} />
                     </FormGroup>
-                    <FormGroup controlId="password" bsSize="large">
+                    <FormGroup controlId="password">
                         <FormLabel>Password</FormLabel>
                         <FormControl value={this.state.password} onChange={this.handleChange} type="password" />
                     </FormGroup>

@@ -3,7 +3,7 @@ import {Navbar, Nav} from 'react-bootstrap';
 import {Component} from 'react'
 import { Auth } from 'aws-amplify';
 
-import Routes from "./components/Routes";
+import Routes from "./containers/routes/Routes";
 
 import './App.css';
 
@@ -91,8 +91,6 @@ class App extends Component{
                                 )}
                         </Navbar.Collapse>
                     </Navbar>
-
-                    <hr />
 
                     <Routes authentication={childProps}/>
 
