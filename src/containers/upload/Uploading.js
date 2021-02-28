@@ -1,5 +1,5 @@
 import React, {Component} from "react"
-import axios from 'axios'
+import Axios from 'axios'
 import config from '../../config.json'
 
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -37,8 +37,8 @@ class Uploading extends Component{
 
     async upload(e) {
 
-        axios.post(
-            config.upload.uri,
+        Axios.post(
+            config.apiBaseUrl+config.wardrobe.upload,
             {
                 'format' : '.jpg',
                 'file' : this.state.base64
