@@ -1,17 +1,27 @@
 import React, {Component} from "react"
 import Axios from 'axios'
+import {Auth} from 'aws-amplify'
 import config from '../../config.json'
 
-import 'bootstrap/dist/css/bootstrap.min.css';
+import 'bootstrap/dist/css/bootstrap.min.css'
+import {Figure} from "react-bootstrap"
+import ErrorAlert from "../../components/ErrorAlert";
+import SuccessAlert from "../../components/SuccessAlert";
 
 class Uploading extends Component{
 
     constructor() {
-        super();
+        super()
 
         this.state = {
             urlFile: null,
-            file: null
+            file: null,
+            uploaded : false,
+            error: {
+                visible: false,
+                name: '',
+                message: ''
+            }
         }
 
         this.preview = this.preview.bind(this)
@@ -21,11 +31,11 @@ class Uploading extends Component{
     async preview(e) {
 
         const toBase64 = file => new Promise((resolve, reject) => {
-            const reader = new FileReader();
-            reader.readAsDataURL(file);
-            reader.onload = () => resolve(reader.result);
-            reader.onerror = error => reject(error);
-        });
+            const reader = new FileReader()
+            reader.readAsDataURL(file)
+            reader.onload = () => resolve(reader.result)
+            reader.onerror = error => reject(error)
+        })
 
         this.setState({
             urlFile: URL.createObjectURL(e.target.files[0]),
@@ -37,30 +47,66 @@ class Uploading extends Component{
 
     async upload(e) {
 
-        Axios.post(
-            config.apiBaseUrl+config.wardrobe.upload,
-            {
-                'format' : '.jpg',
-                'file' : this.state.base64
-            }
-            )
-            .then( (res) => {
-                    console.log(res)
-                    console.log(res.data)
-                }
-            )
-            .catch( (err) => {
-                    console.log(err)
-                    //console.log(err.response.status)
-                }
-            )
+        Auth.currentSession()
+            .then( res => {
+                //console.log(`myAccessToken: ${JSON.stringify(res.getIdToken())}`)
+                let jwt = res.getIdToken().getJwtToken()
+                console.log('myJwt: ' + jwt)
+                console.log(config.apiBaseUrl+config.wardrobe.upload)
+
+                //UPLAOD
+                Axios.post(
+                    config.apiBaseUrl+config.wardrobe.upload,
+                    {
+                        format : '.jpg',
+                        file : this.state.base64
+                    },
+                    { headers: {Authorization: jwt}}
+                )
+                    .then( (res) => {
+                            console.log(res)
+                            console.log(res.data)
+                            this.setState({uploaded: true})
+                        }
+                    )
+                    .catch( (err) => {
+                            console.log(err)
+                            this.setState({
+                                error:{
+                                    visible: true,
+                                    name: err.name,
+                                    message: err.message
+                                }
+                            })
+                        }
+                    )
+
+            })
+            .catch( err => {
+                console.log(err)
+                this.setState({
+                    error:{
+                        visible: true,
+                        name: err.name,
+                        message: err.message
+                    }
+                })
+            })
     }
 
     render(){
 
         let preview
         if(this.state.urlFile !== null){
-            preview = ( <img className="preview card-img" src={this.state.urlFile} alt='preview'/> )
+            preview = (
+                <Figure>
+                    <Figure.Image
+                        alt="..."
+                        thumbnail
+                        src={this.state.urlFile}
+                    />
+                </Figure>
+            )
         }
 
         return(
@@ -86,7 +132,12 @@ class Uploading extends Component{
                         </button>
                     </div>
                 </div>
-                <br/><br/><br/>
+                <br/>
+
+                <SuccessAlert success={this.state.uploaded}/>
+                <ErrorAlert error={this.state.error} />
+
+                <br/><br/>
 
                 {preview}
 
