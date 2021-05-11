@@ -1,10 +1,13 @@
 import {Component}  from "react"
-import {Button, Card, CardDeck} from 'react-bootstrap'
+import {CardDeck} from 'react-bootstrap'
 import Axios from 'axios'
 import {Auth} from 'aws-amplify'
+import WardrobeCard from '../../components/WardrobeCard'
+import Pagination from '../../components/Pagination'
 
 import './Wardrobe.css'
 import config from "../../config.json";
+import testImages from "../../testImages";
 
 class Wardrobe extends Component{
 
@@ -12,14 +15,19 @@ class Wardrobe extends Component{
         super(props)
 
         this.state = {
-            myWardrobe: {}
+            allClothes: [],
+            currentClothes: [],
+            currentPage: null,
+            totalPages: null,
+            images: testImages,
+            WardrobeLength : null
         }
 
         this.getList = this.getList.bind(this)
     }
 
     componentDidMount() {
-        Auth.currentSession()
+        /*Auth.currentSession()
             .then( res => {
                 //console.log(`myAccessToken: ${JSON.stringify(res.getIdToken())}`)
                 let jwt = res.getIdToken().getJwtToken()
@@ -32,91 +40,79 @@ class Wardrobe extends Component{
             .catch( err => {
                 console.log(err)
             })
+        */
+
+        //const { data: allClothes = [] } = testImages;
+        console.log(Object.keys(this.state.images).length)
+
+        var arrayOfKeysImages = []
+        Object.keys(this.state.images).map( key => arrayOfKeysImages.push(this.state.images[key]))
+
+        console.log(arrayOfKeysImages)
+
+        this.setState({
+            allClothes : arrayOfKeysImages,
+            WardrobeLength : arrayOfKeysImages.length
+        })
     }
 
     getList(jwtToken){
-        console.log('getList')
+        console.log('retrieve images')
         Axios.get(
             config.apiBaseUrl+config.wardrobe.getList,
             {
                 headers: {Authorization: jwtToken}
             }
         )
-        .then( (res) => {
-                console.log(res)
-                if(res.status !== 200){
-                    console.log("not 200")
-                    throw Error('ERROR!')
-                    //TODO
+            .then( (res) => {
+                    console.log(res)
+                    if(res.status !== 200){
+                        console.log("not 200")
+                        throw Error('ERROR!')
+                        //TODO
+                    }
+                    let data = JSON.stringify(res.data)
+                    this.setState({myWardrobe: data})
                 }
-                let data = JSON.stringify(res.data)
-                this.setState({myWardrobe: data})
-            }
-        )
-        .catch( (err) => {
-                console.log(err)
-                //console.log(err.response.status)
-            }
-        )
+            )
+            .catch( (err) => {
+                    console.log(err)
+                    //console.log(err.response.status)
+                }
+            )
     }
 
-    render(){
-        //const images = testImages.map(image => <img src={image.url} alt={'image '+image.id}/>)
+    onPageChanged = data => {
+        const { allClothes } = this.state
+        const { currentPage, totalPages, pageLimit } = data
+        const offset = (currentPage - 1) * pageLimit
+        const currentClothes = allClothes.slice(offset, offset + pageLimit)
 
-        return(
-            <div>
-                <div>My Wardrobe</div>
+        this.setState({ currentPage, currentClothes, totalPages })
+    }
+
+    render() {
+        const { allClothes, currentClothes, currentPage, totalPages } = this.state
+        const totalClothes = this.state.WardrobeLength ?? 0;
+
+        if (totalClothes === 0) return null
+
+        return (
+            <div className="container mb-5">
+                <div className="py-1">My Wardrobe</div>
                 <hr/>
-                <CardDeck className="card-deck">
-                    <Card className='shadow p-3 mb-5 bg-white rounded' >
-                        <Card.Img variant="top" src="https://cdn4.buysellads.net/uu/1/41369/1551198561-Adobe_Stock_260x200.jpg" />
-                        <Card.Body>
-                            <Card.Title>Card Title</Card.Title>
-                            <Card.Text>
-                                Some quick example text to build on the card title and make up the bulk of
-                                the card's content.
-                            </Card.Text>
-                            <Button variant="primary">Go somewhere</Button>
-                        </Card.Body>
-                    </Card>
-                    <Card className='shadow-lg p-3 mb-5 bg-white rounded' >
-                        <Card.Img variant="top" src="https://cdn4.buysellads.net/uu/1/41369/1551198561-Adobe_Stock_260x200.jpg" />
-                        <Card.Body>
-                            <Card.Title>Card Title</Card.Title>
-                            <Card.Text>
-                                Some quick example text to build on the card title and make up the bulk of
-                                the card's content.
-                            </Card.Text>
-                            <Button variant="primary">Go somewhere</Button>
-                        </Card.Body>
-                    </Card>
-                    <Card className='shadow-sm p-3 mb-5 bg-white rounded' >
-                        <Card.Img variant="top" src="https://cdn4.buysellads.net/uu/1/41369/1551198561-Adobe_Stock_260x200.jpg" />
-                        <Card.Body>
-                            <Card.Title>Card Title</Card.Title>
-                            <Card.Text>
-                                Some quick example text to build on the card title and make up the bulk of
-                                the card's content.
-                            </Card.Text>
-                            <Button variant="primary">Go somewhere</Button>
-                        </Card.Body>
-                    </Card>
-                    <Card className='shadow-none p-3 mb-5 bg-white rounded' >
-                        <Card.Img variant="top" src="https://cdn4.buysellads.net/uu/1/41369/1551198561-Adobe_Stock_260x200.jpg" />
-                        <Card.Body>
-                            <Card.Title>Card Title</Card.Title>
-                            <Card.Text>
-                                Some quick example text to build on the card title and make up the bulk of
-                                the card's content.
-                            </Card.Text>
-                            <Button variant="primary">Go somewhere</Button>
-                        </Card.Body>
-                    </Card>
-
-                </CardDeck>
-
+                <div className="row d-flex flex-row">
+                    <div className="w-100 px-4 d-flex flex-row-reverse flex-wrap align-items-center justify-content-between">
+                        <div className="d-flex flex-row py-4 align-items-center">
+                            <Pagination totalRecords={totalClothes} pageLimit={config.pagination.itemsPerPage} pageNeighbours={1} onPageChanged={this.onPageChanged} />
+                        </div>
+                    </div>
+                    <CardDeck className='card-grid'>
+                        { currentClothes.map(imgUrl => <WardrobeCard url={imgUrl}/>) }
+                    </CardDeck>
+                </div>
             </div>
-        )
+        );
     }
 }
 

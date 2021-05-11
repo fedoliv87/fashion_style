@@ -13,5 +13,8 @@
     "wardrobe": {
         "getList": "/DEV/ffs/list",
         "upload" : "/DEV/ffs/upload"
+    },
+    "pagination": {
+        "itemsPerPage": 12
     }
 }
