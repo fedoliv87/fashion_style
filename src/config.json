@@ -9,7 +9,7 @@
         "APP_CLIENT_ID": "174is0trljs81sebom2ihrop8m",
         "IDENTITY_POOL_ID": "eu-west-3:2e93bea7-0602-4de5-864e-cadcc2011c07"
     },
-    "apiBaseUrl": "https://h65jgbsbri.execute-api.eu-west-3.amazonaws.com",
+    "apiBaseUrl": "https://ehmplzux79.execute-api.eu-west-3.amazonaws.com",
     "wardrobe": {
         "getList": "/DEV/ffs/list",
         "upload" : "/DEV/ffs/upload"

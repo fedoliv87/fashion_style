@@ -8,10 +8,10 @@ import {Figure} from "react-bootstrap"
 import ErrorAlert from "../../components/ErrorAlert";
 import SuccessAlert from "../../components/SuccessAlert";
 
-class Uploading extends Component{
+class UploadFromLocal extends Component{
 
-    constructor() {
-        super()
+    constructor(props) {
+        super(props)
 
         this.state = {
             urlFile: null,
@@ -109,9 +109,11 @@ class Uploading extends Component{
             )
         }
 
+        if(!this.props.visible)
+            return null
+
         return(
             <div>
-                <h2>Upload your own Images</h2>
                 <div className='row'>
                     <div className="col-8">
                         <label className="btn btn-default p-0">
@@ -146,4 +148,4 @@ class Uploading extends Component{
     }
 }
 
-export default Uploading
+export default UploadFromLocal
