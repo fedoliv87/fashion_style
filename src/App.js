@@ -13,7 +13,7 @@ class App extends Component{
         super(props)
 
         this.state = {
-            isAuthenticated: false,
+            isAuthenticated: Auth.currentSession(),
             isAuthenticating: true
         }
     }
