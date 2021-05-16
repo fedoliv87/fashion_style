@@ -19,7 +19,7 @@ class Wardrobe extends Component{
             currentClothes: [],
             currentPage: null,
             totalPages: null,
-            images: testImages,
+            images: {},
             WardrobeLength : null
         }
 
@@ -27,7 +27,7 @@ class Wardrobe extends Component{
     }
 
     componentDidMount() {
-        /*Auth.currentSession()
+        Auth.currentSession()
             .then( res => {
                 //console.log(`myAccessToken: ${JSON.stringify(res.getIdToken())}`)
                 let jwt = res.getIdToken().getJwtToken()
@@ -40,20 +40,6 @@ class Wardrobe extends Component{
             .catch( err => {
                 console.log(err)
             })
-        */
-
-        //const { data: allClothes = [] } = testImages;
-        console.log(Object.keys(this.state.images).length)
-
-        var arrayOfKeysImages = []
-        Object.keys(this.state.images).map( key => arrayOfKeysImages.push(this.state.images[key]))
-
-        console.log(arrayOfKeysImages)
-
-        this.setState({
-            allClothes : arrayOfKeysImages,
-            WardrobeLength : arrayOfKeysImages.length
-        })
     }
 
     getList(jwtToken){
@@ -66,13 +52,25 @@ class Wardrobe extends Component{
         )
             .then( (res) => {
                     console.log(res)
-                    if(res.status !== 200){
+                    if (res.status !== 200) {
                         console.log("not 200")
                         throw Error('ERROR!')
                         //TODO
                     }
-                    let data = JSON.stringify(res.data)
-                    this.setState({myWardrobe: data})
+                    let data = res.data
+                    //let data = JSON.stringify(res.data)
+                    //this.setState({images: data})
+
+                    var arrayOfKeysImages = []
+                    Object.keys(data).map(key => arrayOfKeysImages.push(data[key]))
+
+                    console.log(arrayOfKeysImages)
+
+                    this.setState({
+                        images: data,
+                        allClothes: arrayOfKeysImages,
+                        WardrobeLength: arrayOfKeysImages.length
+                    })
                 }
             )
             .catch( (err) => {
@@ -108,7 +106,7 @@ class Wardrobe extends Component{
                         </div>
                     </div>
                     <CardDeck className='card-grid'>
-                        { currentClothes.map(imgUrl => <WardrobeCard url={imgUrl}/>) }
+                        { currentClothes.map((imgUrl, index) => <WardrobeCard key={index} url={imgUrl}/>) }
                     </CardDeck>
                 </div>
             </div>
