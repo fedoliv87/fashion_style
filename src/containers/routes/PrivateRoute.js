@@ -5,7 +5,7 @@ function PrivateRoute({component , ...rest}){
 
     console.log(rest)
 
-    if(rest.authentication.isAuthenticated){
+    if(rest.authentication.isAuthenticated === true){
         return (<Route component={component} {...rest} />)
     }
 
