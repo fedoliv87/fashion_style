@@ -12,7 +12,8 @@
     "apiBaseUrl": "https://ehmplzux79.execute-api.eu-west-3.amazonaws.com",
     "wardrobe": {
         "getList": "/DEV/ffs/list",
-        "upload" : "/DEV/ffs/upload"
+        "upload" : "/DEV/ffs/upload",
+        "update" : "/DEV/ffs/update"
     },
     "pagination": {
         "itemsPerPage": 12
