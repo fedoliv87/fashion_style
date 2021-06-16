@@ -31,10 +31,16 @@ class UploadFromLocal extends Component{
     async preview(e) {
 
         const toBase64 = file => new Promise((resolve, reject) => {
-            const reader = new FileReader()
-            reader.readAsDataURL(file)
-            reader.onload = () => resolve(reader.result)
-            reader.onerror = error => reject(error)
+            let reader = new FileReader()
+            //reader.readAsDataURL(file)
+            // reader.onload = () => resolve(reader.result)
+            // reader.onerror = error => reject(error)
+            reader.onloadend = function() {
+                console.log('RESULT', reader.result)
+                let base64Cleaned = reader.result.replace("data:image/jpeg;base64,","")
+                resolve(base64Cleaned)
+            }
+            reader.readAsDataURL(file);
         })
 
         this.setState({
@@ -51,14 +57,15 @@ class UploadFromLocal extends Component{
             .then( res => {
                 //console.log(`myAccessToken: ${JSON.stringify(res.getIdToken())}`)
                 let jwt = res.getIdToken().getJwtToken()
-                console.log('myJwt: ' + jwt)
-                console.log(config.apiBaseUrl+config.wardrobe.upload)
+                //console.log('myJwt: ' + jwt)
+                //console.log(config.apiBaseUrl+config.wardrobe.upload)
+                console.log("FILE: " + this.state.base64)
 
                 //UPLAOD
                 Axios.post(
                     config.apiBaseUrl+config.wardrobe.upload,
                     {
-                        format : '.jpg',
+                        format : '.jpeg',
                         file : this.state.base64
                     },
                     { headers: {Authorization: jwt}}
