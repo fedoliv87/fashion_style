@@ -13,7 +13,8 @@
     "wardrobe": {
         "getList": "/DEV/ffs/list",
         "upload" : "/DEV/ffs/upload",
-        "update" : "/DEV/ffs/update"
+        "update" : "/DEV/ffs/update",
+        "info" : "/DEV/ffs/info"
     },
     "pagination": {
         "itemsPerPage": 12

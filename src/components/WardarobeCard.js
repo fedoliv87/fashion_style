@@ -1,14 +1,15 @@
-import React from 'react'
+import React, {useState} from 'react'
 import {Button, Card} from "react-bootstrap";
 import Axios from 'axios'
 import config from "../config.json";
 import {Auth} from "aws-amplify";
 
-function WardrobeCard(props){
+function WardarobeCard(props){
+    const [isDeleted, setIsDeleted] = useState(false)
+    //console.log(props)
 
     const handleClickDelete = event => {
         console.log(event)
-        console.log(props.url)
         Auth.currentSession()
             .then( res => {
                 //console.log(`myAccessToken: ${JSON.stringify(res.getIdToken())}`)
@@ -16,14 +17,19 @@ function WardrobeCard(props){
                 console.log('myJwt: ' + jwt)
                 console.log(config.apiBaseUrl+config.wardrobe.upload)
 
-                //UPLAOD
+                //DELETE
                 Axios.delete(
                     config.apiBaseUrl+config.wardrobe.update,
-                    { headers: {Authorization: jwt}}
+                    {
+                        headers: {Authorization: jwt},
+                        params: {imgId : props.name}
+                    }
                 )
                 .then( (res) => {
-                        console.log(res)
-                        console.log(res.data)
+                    console.log(res)
+                    console.log(res.data)
+                    console.log('refresh List after delete')
+                    props.refreshList()
                     }
                 )
                 .catch( (err) => {
@@ -37,14 +43,28 @@ function WardrobeCard(props){
             })
     }
 
+    const handleClickInfo = event => {
+        //console.log(props)
+        props.showCardInfo(props.name)
+        console.log('open info')
+    }
+
+    const styleIsDeleted = () => {
+        if(isDeleted === true){
+            return "display: none"
+        }
+    }
+
     return(
-        <Card className='shadow p-3 mb-5 bg-white rounded'>
+        <Card className='shadow p-3 mb-5 bg-white rounded' style={{styleIsDeleted}}>
             <Card.Img variant="top" src={props.url}/>
             <Card.Body>
                 <Button variant="danger" onClick={handleClickDelete}>Delete</Button>
+                <br/><br/>
+                <Button variant="info" onClick={handleClickInfo}>Info</Button>
             </Card.Body>
         </Card>
     )
 }
 
-export default WardrobeCard
+export default WardarobeCard

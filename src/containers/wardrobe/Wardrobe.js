@@ -2,7 +2,8 @@ import {Component}  from "react"
 import {CardDeck} from 'react-bootstrap'
 import Axios from 'axios'
 import {Auth} from 'aws-amplify'
-import WardrobeCard from '../../components/WardrobeCard'
+import WardarobeCard from '../../components/WardarobeCard'
+import WardarobeCardEdit from "../../components/WardarobeCardEdit";
 import Pagination from '../../components/Pagination'
 
 import './Wardrobe.css'
@@ -20,64 +21,68 @@ class Wardrobe extends Component{
             currentPage: null,
             totalPages: null,
             images: {},
-            WardrobeLength : null
+            WardrobeLength : null,
+            editModal: {
+                show: false,
+                id: null
+            }
         }
 
         this.getList = this.getList.bind(this)
+        this.getNameOfImgUrl = this.getNameOfImgUrl.bind(this)
     }
 
     componentDidMount() {
+        this.getList()
+    }
+
+    getList(){
         Auth.currentSession()
             .then( res => {
                 //console.log(`myAccessToken: ${JSON.stringify(res.getIdToken())}`)
                 let jwt = res.getIdToken().getJwtToken()
                 console.log('myJwt: ' + jwt)
 
-                //GETLIST
-                this.getList(jwt)
+                console.log('retrieve images')
+                Axios.get(
+                    config.apiBaseUrl+config.wardrobe.getList,
+                    {
+                        headers: {Authorization: jwt}
+                    }
+                )
+                    .then( (res) => {
+                            console.log(res)
+                            if (res.status !== 200) {
+                                console.log("not 200")
+                                throw Error('ERROR!')
+                                //TODO
+                            }
+                            let data = res.data
+                            //let data = JSON.stringify(res.data)
+                            //this.setState({images: data})
+
+                            var arrayOfKeysImages = []
+                            Object.keys(data).map(key => arrayOfKeysImages.push(data[key]))
+
+                            console.log(arrayOfKeysImages)
+
+                            this.setState({
+                                images: data,
+                                allClothes: arrayOfKeysImages,
+                                WardrobeLength: arrayOfKeysImages.length
+                            })
+                        }
+                    )
+                    .catch( (err) => {
+                            console.log(err)
+                            //console.log(err.response.status)
+                        }
+                    )
 
             })
             .catch( err => {
                 console.log(err)
             })
-    }
-
-    getList(jwtToken){
-        console.log('retrieve images')
-        Axios.get(
-            config.apiBaseUrl+config.wardrobe.getList,
-            {
-                headers: {Authorization: jwtToken}
-            }
-        )
-            .then( (res) => {
-                    console.log(res)
-                    if (res.status !== 200) {
-                        console.log("not 200")
-                        throw Error('ERROR!')
-                        //TODO
-                    }
-                    let data = res.data
-                    //let data = JSON.stringify(res.data)
-                    //this.setState({images: data})
-
-                    var arrayOfKeysImages = []
-                    Object.keys(data).map(key => arrayOfKeysImages.push(data[key]))
-
-                    console.log(arrayOfKeysImages)
-
-                    this.setState({
-                        images: data,
-                        allClothes: arrayOfKeysImages,
-                        WardrobeLength: arrayOfKeysImages.length
-                    })
-                }
-            )
-            .catch( (err) => {
-                    console.log(err)
-                    //console.log(err.response.status)
-                }
-            )
     }
 
     onPageChanged = data => {
@@ -89,11 +94,26 @@ class Wardrobe extends Component{
         this.setState({ currentPage, currentClothes, totalPages })
     }
 
+    getNameOfImgUrl(imgUrl) {
+        let name = null
+        Object.keys(this.state.images).map( (key, index) => {
+            if(this.state.images[key] === imgUrl){
+                name = key
+            }
+        })
+        console.log(name)
+        return name
+        //return this.state.images.findIndex(element => element === imgUrl)
+    }
+
     render() {
         const { allClothes, currentClothes, currentPage, totalPages } = this.state
         const totalClothes = this.state.WardrobeLength ?? 0;
 
         if (totalClothes === 0) return null
+
+        let editModalClose = () => this.setState({editModal: {show: false, id:null}})
+        let EditModalOpen = (id) => this.setState({editModal: {show:true, id:id}})
 
         return (
             <div className="container mb-5">
@@ -106,9 +126,19 @@ class Wardrobe extends Component{
                         </div>
                     </div>
                     <CardDeck className='card-grid'>
-                        { currentClothes.map((imgUrl, index) => <WardrobeCard key={index} url={imgUrl}/>) }
+                        { currentClothes.map((imgUrl, index) => <WardarobeCard
+                                                                    key={index}
+                                                                    url={imgUrl}
+                                                                    name={this.getNameOfImgUrl(imgUrl)}
+                                                                    showCardInfo={EditModalOpen}
+                                                                    refreshList={this.getList}
+                                                                    cardInfoStatus={this.state.editModal.show}
+                                                                />
+                        )}
                     </CardDeck>
                 </div>
+
+                <WardarobeCardEdit show={this.state.editModal.show} name={this.state.editModal.id} onHide={editModalClose}/>
             </div>
         );
     }
