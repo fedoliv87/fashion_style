@@ -14,8 +14,8 @@ class WardarobeCardEdit extends Component{
         }
     }
 
-    componentDidUpdate() {
-        if (this.props.name === null){
+    componentDidUpdate(prevProps, prevState) {
+        if (this.props.name === null || prevProps.name === this.props.name){
             return
         }
 
