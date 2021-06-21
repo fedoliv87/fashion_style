@@ -29,6 +29,14 @@ class UploadFromLocal extends Component{
     }
 
     async preview(e) {
+        this.setState({
+            error:{
+                visible: false,
+                name: '',
+                message: ''
+            },
+            uploaded: false
+        })
 
         const toBase64 = file => new Promise((resolve, reject) => {
             let reader = new FileReader()
