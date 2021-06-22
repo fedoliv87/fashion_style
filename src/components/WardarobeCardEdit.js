@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {Modal} from "react-bootstrap";
+import {Button, Col, Form, Modal, Row} from "react-bootstrap";
 import {Auth} from "aws-amplify";
 import config from "../config.json";
 import Axios from "axios";
@@ -10,8 +10,10 @@ class WardarobeCardEdit extends Component{
         super(props);
 
         this.state = {
-            info : null
+            info : {}
         }
+
+        this.handleUpdate = this.handleUpdate.bind(this)
     }
 
     componentDidUpdate(prevProps, prevState) {
@@ -47,6 +49,37 @@ class WardarobeCardEdit extends Component{
             })
     }
 
+    handleUpdate(event){
+
+
+        Auth.currentSession()
+            .then( res => {
+                let jwt = res.getIdToken().getJwtToken()
+                console.log(config.apiBaseUrl+config.wardrobe.update)
+
+                //INFO
+                Axios.put(
+                    config.apiBaseUrl+config.wardrobe.update,
+                    {
+                        headers: {Authorization: jwt},
+                        params: {imgId: this.props.name}
+                    }
+                )
+                    .then( (res) => {
+                            console.log(res)
+                            this.setState({info: res.data})
+                        }
+                    )
+                    .catch( (err) => {
+                            console.log(err)
+                        }
+                    )
+            })
+            .catch( err => {
+                console.log(err)
+            })
+    }
+
     render() {
         return (<div>
             <Modal
@@ -60,6 +93,39 @@ class WardarobeCardEdit extends Component{
                     <Modal.Title id="contained-modal-title-vcenter"> INFORMATION </Modal.Title>
                 </Modal.Header>
 
+                <Form onSubmit={this.handleUpdate}>
+                    <Modal.Body>
+
+                        <Form.Group as={Row} controlId="formPlaintextPassword">
+                            <Form.Label column sm="2">Colors</Form.Label>
+                            <Col sm="10">
+                                <Form.Control
+                                    plaintext
+                                    readOnly
+                                    defaultValue = {this.state.info.hasOwnProperty('colors') ? this.state.info.colors : null}
+                                />
+                            </Col>
+                        </Form.Group>
+
+                        <Form.Group as={Row} controlId="formCategory">
+                            <Form.Label column sm="2">Category</Form.Label>
+                            <Col sm="10">
+                                <Form.Control
+                                    type="text"
+                                    name="category"
+                                    required
+                                    defaultValue = {this.state.info.hasOwnProperty('category') ? this.state.info.category : null}
+                                    placeholder="Category"
+                                />
+                            </Col>
+                        </Form.Group>
+                    </Modal.Body>
+                    <Modal.Footer>
+                        <Form.Group>
+                            <Button variant="primary" type="submit">Update</Button>
+                        </Form.Group>
+                    </Modal.Footer>
+                </Form>
             </Modal>
         </div>)
     }
