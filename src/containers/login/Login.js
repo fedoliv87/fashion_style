@@ -1,5 +1,5 @@
 import {Component} from "react"
-import {FormControl, FormGroup, FormLabel} from "react-bootstrap";
+import {Form, FormControl, FormGroup, FormLabel} from "react-bootstrap";
 import {Auth} from 'aws-amplify'
 
 import LoaderButton from "../../components/LoaderButton";
@@ -67,12 +67,11 @@ class Login extends Component{
         return(
             <div className="Login">
 
-                <span>Login</span>
                 <hr/>
 
                 <ErrorAlert show={this.state.error.visible} error={this.state.error} />
 
-                <form onSubmit={this.handleSubmit}>
+                <Form onSubmit={this.handleSubmit}>
                     <FormGroup controlId="email">
                         <FormLabel>Email</FormLabel>
                         <FormControl autoFocus type="email" value={this.state.email} onChange={this.handleChange} />
@@ -90,7 +89,7 @@ class Login extends Component{
                         text="Login"
                         loadingText="Logging in…"
                     />
-                </form>
+                </Form>
             </div>
         )
     }
