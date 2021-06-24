@@ -71,6 +71,7 @@ class WardarobeCardEdit extends Component{
     }
 
     handleUpdate(event){
+        event.preventDefault();
 
         if(event.target.formCategory.value === this.state.info.category){
             return
@@ -81,10 +82,10 @@ class WardarobeCardEdit extends Component{
                 let jwt = res.getIdToken().getJwtToken()
                 console.log(config.apiBaseUrl+config.wardrobe.update)
 
-                //INFO
+                //UPDATE CATEGORY
                 Axios.put(
                     config.apiBaseUrl+config.wardrobe.update,
-                    {category: event.target.formCategory.value},
+                    {"category": event.target.formCategory.value},
                     {
                         headers: {Authorization: jwt},
                         params: {imgId: this.props.name}
@@ -92,7 +93,6 @@ class WardarobeCardEdit extends Component{
                 )
                     .then( (res) => {
                             console.log(res)
-                            this.setState({info: res.data})
                         }
                     )
                     .catch( (err) => {
