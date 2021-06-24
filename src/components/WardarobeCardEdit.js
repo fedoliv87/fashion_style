@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import {Button, Col, Form, Modal, Row} from "react-bootstrap";
+import {CirclePicker} from "react-color";
 import {Auth} from "aws-amplify";
 import config from "../config.json";
 import Axios from "axios";
@@ -10,7 +11,10 @@ class WardarobeCardEdit extends Component{
         super(props);
 
         this.state = {
-            info : {}
+            info : {
+                colors : [],
+                category: null
+            }
         }
 
         this.handleUpdate = this.handleUpdate.bind(this)
@@ -20,6 +24,8 @@ class WardarobeCardEdit extends Component{
         if (this.props.name === null || prevProps.name === this.props.name){
             return
         }
+
+        this.setState({info: {colors: [], category: null}})
 
         Auth.currentSession()
             .then( res => {
@@ -35,14 +41,29 @@ class WardarobeCardEdit extends Component{
                     }
                 )
                     .then( (res) => {
-                            console.log(res)
-                            this.setState({info: res.data})
+                        console.log(res)
+
+                        let arrayColors = [];
+                        if(res.data.hasOwnProperty('colors')){
+                            let txtColors = res.data.colors
+
+                            // Extract HEX of colors
+                            let regex = /\(\d*\.\d*\)/gm
+                            let txtColorsCleaned = txtColors.replace(regex,'')
+
+                            arrayColors = txtColorsCleaned.split(',')
                         }
-                    )
+
+                        console.log(arrayColors)
+                        this.setState({info: {
+                                colors: arrayColors,
+                                category: res.data.category
+                            }
+                        })
+                    })
                     .catch( (err) => {
-                            console.log(err)
-                        }
-                    )
+                        console.log(err)
+                    })
             })
             .catch( err => {
                 console.log(err)
@@ -51,6 +72,9 @@ class WardarobeCardEdit extends Component{
 
     handleUpdate(event){
 
+        if(event.target.formCategory.value === this.state.info.category){
+            return
+        }
 
         Auth.currentSession()
             .then( res => {
@@ -60,6 +84,7 @@ class WardarobeCardEdit extends Component{
                 //INFO
                 Axios.put(
                     config.apiBaseUrl+config.wardrobe.update,
+                    {category: event.target.formCategory.value},
                     {
                         headers: {Authorization: jwt},
                         params: {imgId: this.props.name}
@@ -99,11 +124,7 @@ class WardarobeCardEdit extends Component{
                         <Form.Group as={Row} controlId="formPlaintextPassword">
                             <Form.Label column sm="2">Colors</Form.Label>
                             <Col sm="10">
-                                <Form.Control
-                                    plaintext
-                                    readOnly
-                                    defaultValue = {this.state.info.hasOwnProperty('colors') ? this.state.info.colors : null}
-                                />
+                                <CirclePicker colors={this.state.info.colors}/>
                             </Col>
                         </Form.Group>
 
@@ -114,8 +135,7 @@ class WardarobeCardEdit extends Component{
                                     type="text"
                                     name="category"
                                     required
-                                    defaultValue = {this.state.info.hasOwnProperty('category') ? this.state.info.category : null}
-                                    placeholder="Category"
+                                    placeholder = {this.state.info.category}
                                 />
                             </Col>
                         </Form.Group>
