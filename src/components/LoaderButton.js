@@ -10,7 +10,6 @@ function LoaderButton({ isLoading, text, loadingText, className = '', disabled =
                 disabled={disabled || isLoading}
                 {...props}
         >
-            {/*isLoading && <Glyphicon glyph="refresh" className="spinning" />*/}
             {!isLoading ? text : loadingText}
         </Button>
     )
