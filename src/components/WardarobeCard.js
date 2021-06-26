@@ -49,6 +49,12 @@ function WardarobeCard(props){
         console.log('open info')
     }
 
+    const handleClickMatching = event => {
+        //console.log(props)
+        props.showCardMatching(props.name)
+        console.log('open info')
+    }
+
     const styleIsDeleted = () => {
         if(isDeleted === true){
             return "display: none"
@@ -61,7 +67,8 @@ function WardarobeCard(props){
             <Card.Body>
                 <Button variant="danger" onClick={handleClickDelete}>Delete</Button>
                 <br/><br/>
-                <Button variant="info" onClick={handleClickInfo}>Info</Button>
+                <Button variant="info" onClick={handleClickInfo}>Info</Button>{' '}
+                <Button variant="info" onClick={handleClickMatching}>Matching</Button>
             </Card.Body>
         </Card>
     )

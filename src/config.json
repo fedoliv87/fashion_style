@@ -14,7 +14,8 @@
         "getList": "/DEV/ffs/list",
         "upload" : "/DEV/ffs/upload",
         "update" : "/DEV/ffs/update",
-        "info" : "/DEV/ffs/info"
+        "info" : "/DEV/ffs/info",
+        "outfit":  "/DEV/ffs/outfit"
     },
     "pagination": {
         "itemsPerPage": 12

@@ -4,6 +4,7 @@ import Axios from 'axios'
 import {Auth} from 'aws-amplify'
 import WardarobeCard from '../../components/WardarobeCard'
 import WardarobeCardEdit from "../../components/WardarobeCardEdit";
+import WardarobeCardMatching from "../../components/WardarobeCardMatching";
 import Pagination from '../../components/Pagination'
 
 import './Wardrobe.css'
@@ -22,10 +23,8 @@ class Wardrobe extends Component{
             totalPages: null,
             images: {},
             WardrobeLength : null,
-            editModal: {
-                show: false,
-                id: null
-            }
+            editModal: {show: false, id: null},
+            matchingModal: {show: false, id: null }
         }
 
         this.getList = this.getList.bind(this)
@@ -92,6 +91,7 @@ class Wardrobe extends Component{
         const currentClothes = allClothes.slice(offset, offset + pageLimit)
 
         this.setState({ currentPage, currentClothes, totalPages })
+        return true
     }
 
     getNameOfImgUrl(imgUrl) {
@@ -100,6 +100,7 @@ class Wardrobe extends Component{
             if(this.state.images[key] === imgUrl){
                 name = key
             }
+            return true
         })
         console.log(name)
         return name
@@ -107,13 +108,16 @@ class Wardrobe extends Component{
     }
 
     render() {
-        const { allClothes, currentClothes, currentPage, totalPages } = this.state
+        const { currentClothes } = this.state
         const totalClothes = this.state.WardrobeLength ?? 0;
 
         if (totalClothes === 0) return null
 
         let editModalClose = () => this.setState({editModal: {show: false, id:null}})
-        let EditModalOpen = (id) => this.setState({editModal: {show:true, id:id}})
+        let editModalOpen = (id) => this.setState({editModal: {show:true, id:id}})
+
+        let matchingModalClose = () => this.setState({matchingModal: {show: false, id:null}})
+        let matchingModalOpen = (id) => this.setState({matchingModal: {show:true, id:id}})
 
         return (
             <div className="container mb-5">
@@ -130,15 +134,16 @@ class Wardrobe extends Component{
                                                                     key={index}
                                                                     url={imgUrl}
                                                                     name={this.getNameOfImgUrl(imgUrl)}
-                                                                    showCardInfo={EditModalOpen}
+                                                                    showCardInfo={editModalOpen}
+                                                                    showCardMatching={matchingModalOpen}
                                                                     refreshList={this.getList}
-                                                                    cardInfoStatus={this.state.editModal.show}
                                                                 />
                         )}
                     </CardDeck>
                 </div>
 
                 <WardarobeCardEdit show={this.state.editModal.show} name={this.state.editModal.id} onHide={editModalClose}/>
+                <WardarobeCardMatching show={this.state.matchingModal.show} name={this.state.matchingModal.id} onHide={matchingModalClose}/>
             </div>
         );
     }
